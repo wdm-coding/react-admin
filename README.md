@@ -117,6 +117,14 @@ export default defineConfig({
 	}
 })
 ```
+3. tsconfig.json 配置别名映射
+```json
+"baseUrl": "src",
+"paths": {
+  "@/*": ["*"]
+}
+```
+
 ::: tip 针对 ES Modules 引入__dirname 的解决方案
   如果使用 "type": "module"，改用以下方式：
   ```js
