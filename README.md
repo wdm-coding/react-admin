@@ -61,6 +61,7 @@ module.exports = {
     "source.fixAll.eslint": true
   }
 ```
+
 ## eslint配合prettier 解决格式化冲突
 1. 安装依赖eslint，prettier
 ```bash
@@ -91,6 +92,7 @@ module.exports = {
   },
 }
 ```
+
 ## react + vite 配置别名
 1. 项目根目录下创建`vite.config.ts`文件
 2. 安装依赖
@@ -124,16 +126,44 @@ export default defineConfig({
     const __dirname = dirname(__filename);
   ```
 :::
+## 目录结构定义
+1. api: 存放接口请求
+2. components: 存放公用组件
+3. config: 存放配置文件
+4. layout: 存放布局组件
+5. router: 存放路由配置
+6. store: 存放状态管理
+7. utils: 存放工具函数
+8. types: 存放类型定义
+9. hooks: 存放自定义hooks
+10. views: 存放页面组件
+## 路由配置
 
-## 安装React-Router
-1. 安装依赖
+### API 路由配置
+1. 安装React-Router
 ```bash
 $ npm install react-router-dom
 ```
 2. 项目根目录下创建`src/router/index.tsx`文件
 3. 配置文件内容
 ```js
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import App from '../App'
-import Login from '../pages/Login'
-import Home from '../pages/Home'
+import { createHashRouter, RouteObject } from 'react-router-dom'
+const router: RouteObject[] = [
+	{ path: '/', element: <div>首页</div> },
+	{ path: '/about', element: <div>关于</div> },
+	{ path: '/user', element: <div>用户</div> }
+]
+export default createHashRouter(router)
+```
+4. 通过RouterProvider组件包裹App
+```js
+import { RouterProvider } from 'react-router-dom'
+import router from './router'
+function App() {
+	return <RouterProvider router={router} />
+}
+export default App
+```
+
+### 组件化路由配置
+  
