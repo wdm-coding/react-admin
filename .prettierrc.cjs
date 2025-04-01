@@ -1,5 +1,5 @@
 module.exports = {
-  printWidth: 120, // 每行代码长度（默认80）
+  "printWidth": 120, // 每行代码长度（默认80）
   "singleQuote": true, // 使用单引号（默认false）
   "trailingComma": "none", // 末尾逗号（默认none）
   "endOfLine": "auto", // 结尾是 \n \r \n\r auto

@@ -39,24 +39,101 @@ $ npm install --save-dev prettier
 3. 配置文件内容
 ```js
 module.exports = {
-  printWidth: 120, // 每行代码长度（默认80）
-  tabWidth: 2, // 每个缩进级别的空格数（默认2）
-  semi: true, // 语句末尾是否加分号（默认true）
-  singleQuote: true,
-  useTabs: false,
-  trailingComma: 'none',
-  bracketSpacing: true,
-  jsxBracketSameLine: false,
-  arrowParens: 'avoid',
+  "printWidth": 120, // 每行代码长度（默认80）
+  "singleQuote": true, // 使用单引号（默认false）
+  "trailingComma": "none", // 末尾逗号（默认none）
+  "endOfLine": "auto", // 结尾是 \n \r \n\r auto
+  "semi": false, // 句尾添加分号（默认true）
+  "tabWidth": 2, // tab缩进大小(默认是2)
+  "useTabs": true, // 使用tab缩进（默认false）
+  "bracketSpacing": true, // 对象字面量的大括号间增加空格（默认true）
+  "jsxBracketSameLine": true, // jsx标签的反尖括号是否单独一行（默认false）
+  "arrowParens": "avoid", // 箭头函数参数为单个时是否省略括号（默认avoid）
 }
 ```
 4. 安装插件
 - VS Code: Prettier - Code formatter
 5. 局部保存格式化：项目根目录下创建`.vscode`文件
 ```json
-  "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.codeActionsOnSave":{
-    "source.fixAll":true
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
   }
 ```
+## eslint配合prettier 解决格式化冲突
+1. 安装依赖eslint，prettier
+```bash
+$ npm install -D eslint prettier eslint-plugin-react @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-config-prettier
+```
+2. 项目根目录下创建`.eslintrc.cjs`文件
+3. 配置文件内容
+```js
+module.exports = {
+  root: true,
+  env: { browser: true, es2020: true },
+  extends: [
+    'eslint:recommended',// 推荐规则集
+    'plugin:@typescript-eslint/recommended', // 官方推荐的规则集
+    'plugin:react/recommended', // 官方推荐的react规则集
+    'plugin:react-hooks/recommended',// 官方推荐的react-hooks规则集
+    'plugin:prettier/recommended' // prettier推荐的规则集
+  ],
+  ignorePatterns: ['dist', '.eslintrc.cjs'],
+  parser: '@typescript-eslint/parser',
+  plugins: ['react-refresh','react','@typescript-eslint','prettier'],
+  rules: {
+    "react/react-in-jsx-scope": "off",
+    'react-refresh/only-export-components': [
+      'warn',
+      { allowConstantExport: true },
+    ],
+  },
+}
+```
+## react + vite 配置别名
+1. 项目根目录下创建`vite.config.ts`文件
+2. 安装依赖
+```bash
+$ npm install path
+```
+2. 配置文件内容
+```js
+import path from 'path'
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+export default defineConfig({
+	plugins: [react()],
+	resolve: {
+		alias: {
+			'@': path.resolve(__dirname, './src')
+		}
+	}
+})
+```
+::: tip 针对 ES Modules 引入__dirname 的解决方案
+  如果使用 "type": "module"，改用以下方式：
+  ```js
+    import { fileURLToPath } from 'url';
+    import { dirname } from 'path';
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+  ```
+:::
+
+## 安装React-Router
+1. 安装依赖
+```bash
+$ npm install react-router-dom
+```
+2. 项目根目录下创建`src/router/index.tsx`文件
+3. 配置文件内容
+```js
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import App from '../App'
+import Login from '../pages/Login'
+import Home from '../pages/Home'
