@@ -17,6 +17,7 @@ module.exports = {
       'off',
       { allowConstantExport: true },
     ],
+    "@typescript-eslint/no-explicit-any": "off",
     // 没有使用时报错
     'no-unused-vars': 'warn'
   },

@@ -145,6 +145,13 @@ export default defineConfig({
 8. types: 存放类型定义
 9. hooks: 存放自定义hooks
 10. views: 存放页面组件
+
+## 安装Antd
+1. 下载依赖
+```bash
+$ npm install antd
+```
+
 ## 路由配置
 
 ### API 路由配置
