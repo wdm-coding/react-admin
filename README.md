@@ -198,3 +198,67 @@ function App() {
 }
 export default App
 ```
+## Axios封装
+
+### 1. 安装依赖
+```bash
+$ npm install axios
+```
+### 2. 项目根目录下创建`src/utils/request.ts`文件
+### 3. 封装axios请求方法
+```js
+import axios from 'axios'
+// 创建axios实例
+const request = axios.create({
+  baseURL: '/api', // API的base_url
+  timeout: 5000, // 请求超时时间
+})
+// 请求拦截器
+request.interceptors.request.use(
+  (config) => {
+    return config
+  },
+  (error) => {
+    Promise.reject(error)
+  }
+)
+// 响应拦截器
+request.interceptors.response.use(
+  (response) => {
+    if (response.status === 200) {
+      return response.data
+    } else {
+      console.log('error')
+    }
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+export default request
+```
+### 4. 使用`request`请求数据
+```js
+import request from '@/utils/request'
+export function getUserInfo() {
+  return request.get('/user')
+}
+```
+### 5. 配置开发环境代理
+在`vite.config.ts`中配置代理
+```js
+export default defineConfig({
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000', // 目标服务器地址
+        changeOrigin: true, // 是否改变源
+        rewrite: (path) => path.replace(/^\/api/, ''), // 重写路径
+        logLevel: 'debug', // 日志级别
+      },
+    },
+  },
+})
+```
+## 全局loading组件封装
+react-6-5
