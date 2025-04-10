@@ -289,5 +289,190 @@ $ npm install normalize.css
 ```js
 import 'normalize.css'
 ```
+
 ## 全局loading组件封装
-react-6-5
+1. 在`utils`目录下创建`loading/index.js`
+
+2. 封装loading组件的展示和隐藏
+```tsx
+import ReactDOM from 'react-dom/client'
+import Loading from './loading'
+let count = 0
+export const showLoading = () => {
+	if (count === 0) {
+		const spinWrapDiv = document.createElement('div')
+		spinWrapDiv.setAttribute('id', 'root-loading')
+		document.body.appendChild(spinWrapDiv)
+		ReactDOM.createRoot(spinWrapDiv).render(<Loading />)
+	}
+	count++
+}
+export const hideLoading = () => {
+	if (count < 0) return
+	count--
+	if (count === 0) {
+		const spinWrapDiv = document.getElementById('root-loading') as HTMLDivElement
+		document.body.removeChild(spinWrapDiv)
+	}
+}
+```
+
+3. 在`loading/loading.tsx`中创建组件
+```tsx
+import { Spin } from 'antd'
+import './loading.scss'
+function Loading({ tip = 'loading' }: { tip?: string }) {
+	return <Spin size="large" tip={tip} wrapperClassName="requiest-loading" fullscreen={true} />
+}
+
+export default Loading
+```
+
+4. 在`loading/loading.scss`中创建样式
+```scss
+#root-loading{
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+```
+
+## 本地存储封装
+1. 在`utils`目录下创建`storage/index.ts`
+2. 将本项目所有的存储放在统一的key下
+
+```ts
+const BASE_KEY = 'REACT_ADMIN_CACHE'
+// 1.sessionStorage存储
+export function setItem(key: string, data: any) {
+	// 1. 读取已有数据
+	const oldData = JSON.parse(sessionStorage.getItem(BASE_KEY) as string)
+	// 2. 合并新旧数据
+	if (oldData) {
+		const newData = { ...oldData, [key]: data }
+		return sessionStorage.setItem(BASE_KEY, JSON.stringify(newData))
+	} else {
+		sessionStorage.setItem(BASE_KEY, JSON.stringify({ [key]: data }))
+	}
+}
+// 2.sessionStorage获取
+export function getItem(key: string) {
+	const oldData = JSON.parse(sessionStorage.getItem(BASE_KEY) as string)
+	if (oldData) {
+		const result = oldData[key]
+		try {
+			return JSON.parse(result as string)
+		} catch (error) {
+			return result as string
+		}
+	} else {
+		return null
+	}
+}
+// 3.sessionStorage移除
+export function removeItem(key: string) {
+	const oldData = JSON.parse(sessionStorage.getItem(BASE_KEY) as string)
+	if (oldData && oldData[key]) {
+		delete oldData[key]
+		return sessionStorage.setItem(BASE_KEY, JSON.stringify(oldData))
+	} else {
+		return null
+	}
+}
+// 清楚缓存
+export function clearCache() {
+	sessionStorage.removeItem(BASE_KEY)
+}
+```
+## 编译时环境配置
+1. vite 将环境变量暴漏在`import.meta.env`上
+2. 在`.env`文件中配置开发环境变量
+```yaml
+# 设置NODE_NEV环境模式
+VITE_NODE_NEV = dev
+# 前端端口
+VITE_PORT = 9001
+# 反向代理地址
+VITE_PROXY_URL = http://localhost:3000/api
+# 设置接口的api地址
+VITE_BASE_API = '/api'
+```
+3. 在`.env.stag`文件中配置测试环境变量
+4. 在`.env.production`文件中配置生产环境变量
+5. 在`package.json`中配置环境变量
+```json
+"scripts": {
+  "dev": "vite",
+  "build:stag": "vite build --mode stag",
+  "build:prod": "vite build --mode prod",
+}
+```
+
+## 运行时环境配置
+1. 在`src/config/index.ts`中配置
+2. 封装运行时环境配置
+```ts
+type ENV = 'dev' | 'stag' | 'prod'
+const env = import.meta.env.VITE_NODE_NEV as ENV
+const config = {
+	dev: {
+		name: '开发环境'
+	},
+	stag: {
+		name: '测试环境'
+	},
+	prod: {
+		name: '生产环境'
+	}
+}
+export default config[env]
+```
+
+::: tip 编译时环境配置和运行时环境配置的区别
+1. 编译时环境配置：在项目构建阶段就已经确定了，比如`VITE_PORT`, `VITE_PROXY_URL`等
+2. 运行时环境配置：在项目运行阶段才能确定，比如`VITE_NODE_NEV`, `VITE_BASE_API`等
+3. 运行时环境配置更容易做动态切换，比如在开发阶段和测试阶段的接口地址不一样。
+:::
+
+## 金额格式化
+
+::: tip toLocaleString() 方法参数
+1. locales：语言环境，比如`ar-EG`, `zh-CN`等
+2. options：配置项，比如`style: 'percent'`表示百分比格式化
+3. style：格式化样式，比如`percent`, `currency`, `decimal`等
+:::
+1. 千分位格式化
+```ts
+export function formatMoney(value: number | string) {
+  return Number(value).toLocaleString('ar-EG')
+}
+```
+2. 百分比格式化
+```ts
+export function formatPercent(value: number | string) {
+  return Number(value).toLocaleString('ar-EG', { style: 'percent' })
+}
+```
+3. 货币格式化
+```ts
+export function formatCurrency(value: number | string) {
+  return Number(value).toLocaleString('ar-EG', { style: 'currency', currency: 'CNY' })
+}
+```
+4. 数字格式化
+```ts
+export function formatNumber(value: number | string) {
+  return Number(value).toLocaleString('ar-EG', { style: 'decimal' })
+}
+```
+5. 中文数字格式化
+```ts
+export function formatChineseNumber(value: number | string) {
+  return Number(value).toLocaleString('zh-CN', { style: 'decimal' })
+}
+```

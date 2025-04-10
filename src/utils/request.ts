@@ -1,8 +1,9 @@
 import axios from 'axios'
 import { showLoading, hideLoading } from '@/utils/loading/index'
 // 创建axios实例
+const VITE_BASE_API = import.meta.env.VITE_BASE_API || '/'
 const request = axios.create({
-	baseURL: '/api', // API的base_url
+	baseURL: VITE_BASE_API, // API的base_url
 	timeout: 5000 // 请求超时时间
 })
 request.interceptors.request.use(
