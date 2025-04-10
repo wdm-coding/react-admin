@@ -8,7 +8,7 @@ const router: RouteObject[] = [
 		path: '/',
 		element: <Layout />,
 		children: [
-			{ path: 'home', element: <Home /> },
+			{ element: <Home />, index: true },
 			{ path: 'about', element: <div>about</div> }
 		]
 	},

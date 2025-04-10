@@ -260,5 +260,34 @@ export default defineConfig({
   },
 })
 ```
+## 项目配置scss
+1. 安装依赖
+```bash
+$ npm install sass -D
+```
+2. 在`vite.config.ts`中配置scss
+```js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+export default defineConfig({
+  plugins: [react()],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "@/styles/index.scss";`, // 全局引入样式文件
+      },
+    },
+  },
+})
+```
+## 项目样式初始化`Normalize.css`
+ 1. 安装依赖
+```bash
+$ npm install normalize.css
+```
+2. 在`src/styles/index.scss`中引入样式文件
+```js
+import 'normalize.css'
+```
 ## 全局loading组件封装
 react-6-5

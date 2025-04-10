@@ -16,10 +16,19 @@ export default defineConfig({
 			'@': path.resolve(__dirname, './src')
 		}
 	},
+	// scss配置
+	css: {
+		preprocessorOptions: {
+			scss: {
+				// 关闭 sass 变量名称警告
+				silenceDeprecations: ['legacy-js-api']
+			}
+		}
+	},
 	// 开发服务器配置
 	server: {
 		host: '0.0.0.0', // 服务器地址
-		port: 8080, // 服务端口号
+		port: 9001, // 服务端口号
 		open: false, // 自动打开浏览器
 		cors: true, // 允许跨域
 		hmr: true, // 热更新
@@ -27,7 +36,7 @@ export default defineConfig({
 		// 代理配置
 		proxy: {
 			'/api': {
-				target: 'http://localhost:8080',
+				target: 'http://localhost:3000/api',
 				changeOrigin: true,
 				rewrite: path => path.replace(/^\/api/, '')
 			}

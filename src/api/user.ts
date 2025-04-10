@@ -1,9 +1,8 @@
 import request from '@/utils/request.ts'
 
-export function userLogin(params: any) {
+export function userLogin() {
 	return request({
-		url: '/api/v1/user/info',
-		method: 'get',
-		params
+		url: '/user/test',
+		method: 'get'
 	})
 }
