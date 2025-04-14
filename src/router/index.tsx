@@ -1,5 +1,5 @@
 import { useRoutes, RouteObject, Navigate } from 'react-router-dom'
-import Login from '@/views/Login.tsx'
+import Login from '@/views/Login/index.tsx'
 import NotFound from '@/views/NotFound.tsx'
 import Home from '@/views/Home/index.tsx'
 import Layout from '@/layout/index.tsx'

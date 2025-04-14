@@ -1,4 +1,5 @@
 import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath } from 'url'
@@ -12,7 +13,7 @@ export default defineConfig(({ mode }) => {
 		root: './', // 根目录
 		base: '/', // 项目打包路径
 		publicDir: 'public', // 静态资源目录
-		plugins: [react()], // 插件
+		plugins: [react(), tailwindcss()], // 插件
 		// 别名配置
 		resolve: {
 			alias: {
@@ -23,6 +24,8 @@ export default defineConfig(({ mode }) => {
 		css: {
 			preprocessorOptions: {
 				scss: {
+					// 自动导入定制化样式文件进行样式覆盖
+					additionalData: '@use "@/styles/index.scss" as *;',
 					// 关闭 sass 变量名称警告
 					silenceDeprecations: ['legacy-js-api']
 				}

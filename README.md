@@ -151,6 +151,23 @@ export default defineConfig({
 ```bash
 $ npm install antd
 ```
+## vite项目安装Tailwind CSS 
+1. 下载依赖
+```bash
+$ npm install tailwindcss @tailwindcss/vite
+```
+2. 配置 Vite 插件
+```bash
+import tailwindcss from '@tailwindcss/vite'
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+})
+```
+3. 导入 Tailwind CSS
+```css
+@import "tailwindcss";
+```
+
 
 ## 路由配置
 
@@ -438,41 +455,3 @@ export default config[env]
 2. 运行时环境配置：在项目运行阶段才能确定，比如`VITE_NODE_NEV`, `VITE_BASE_API`等
 3. 运行时环境配置更容易做动态切换，比如在开发阶段和测试阶段的接口地址不一样。
 :::
-
-## 金额格式化
-
-::: tip toLocaleString() 方法参数
-1. locales：语言环境，比如`ar-EG`, `zh-CN`等
-2. options：配置项，比如`style: 'percent'`表示百分比格式化
-3. style：格式化样式，比如`percent`, `currency`, `decimal`等
-:::
-1. 千分位格式化
-```ts
-export function formatMoney(value: number | string) {
-  return Number(value).toLocaleString('ar-EG')
-}
-```
-2. 百分比格式化
-```ts
-export function formatPercent(value: number | string) {
-  return Number(value).toLocaleString('ar-EG', { style: 'percent' })
-}
-```
-3. 货币格式化
-```ts
-export function formatCurrency(value: number | string) {
-  return Number(value).toLocaleString('ar-EG', { style: 'currency', currency: 'CNY' })
-}
-```
-4. 数字格式化
-```ts
-export function formatNumber(value: number | string) {
-  return Number(value).toLocaleString('ar-EG', { style: 'decimal' })
-}
-```
-5. 中文数字格式化
-```ts
-export function formatChineseNumber(value: number | string) {
-  return Number(value).toLocaleString('zh-CN', { style: 'decimal' })
-}
-```
