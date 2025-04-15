@@ -1,44 +1,57 @@
-import './index.scss'
+import styles from './index.module.scss'
+import type { FormProps } from 'antd'
+import { Button, Form, Input } from 'antd'
+import { useState } from 'react'
 type FieldType = {
-  username?: string
+  account?: string
   password?: string
 };
-import { Button, Form, Input } from 'antd'
 function Login() {
-	const onFinish = () => (values: FieldType) => {
+	const [loading, setLoading] = useState<boolean>(false)
+	const onFinish: FormProps<FieldType>['onFinish'] = values => {
 		console.log('Success:', values)
+		setLoading(true)
+		setTimeout(() => {
+			setLoading(false)
+			window.$message.success('登录成功')
+			window.$message.error('error',5,()=>{console.log('error')})
+		}, 2000)
 	}
 	return (
-		<div className="login_wrap w-screen h-screen text-white flex items-centejustify-center">
-			<div className="w-[30vw] h-[42vh] bg-white">
-				<h1 className="ss">sss</h1>
+		<div className={`${styles.login_wrap} w-screen h-screen text-white flex items-center justify-center`}>
+			<div className="w-[30vw] h-[42vh] bg-white pt-[2vh] pl-[1vw] pr-[1vw] rounded-lg">
+				<h1 className="text-black text-center pb-[3vh] font-semibold">欢迎登录</h1>
 				<Form
 					name="basic"
-					initialValues={{ remember: true }}
 					onFinish={onFinish}
-					autoComplete="off"
+					size="large"
 				>
 					<Form.Item<FieldType>
-						label="Username"
-						name="username"
-						rules={[{ required: true, message: 'Please input your username!' }]}
+						label="账号"
+						name="account"
+						rules={[{ required: true, message: '请输入账号!' }]}
 					>
-						<Input />
+						<Input autoComplete="off"/>
 					</Form.Item>
 					<Form.Item<FieldType>
-						label="Password"
+						label="密码"
 						name="password"
-						rules={[{ required: true, message: 'Please input your password!' }]}
+						rules={[{ required: true, message: '请输入密码!' }]}
 					>
-						<Input.Password />
+						<Input.Password autoComplete="new-password"/>
 					</Form.Item>
 					<Form.Item label={null}>
-						<Button
-							type="primary"
-							htmlType="submit"
-						>
-              Submit
-						</Button>
+						<div className="pt-[3vh] w-full flex items-center justify-center">
+							<Button
+								loading={loading}
+								type="primary"
+								htmlType="submit"
+								className="w-[20vw] h-[40px]"
+								size="large"
+							>
+              登录
+							</Button>
+						</div>
 					</Form.Item>
 				</Form>
 			</div>

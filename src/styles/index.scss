@@ -1,0 +1,15 @@
+// 浏览器填充文本框背景色修改
+.ant-input:-webkit-autofill,
+.ant-input:-webkit-autofill:hover,
+.ant-input:-webkit-autofill:focus,
+.ant-input:-webkit-autofill:active {
+	transition-delay: 999999999s;
+	transition: color  999999999s ease-out, background-color  999999999s ease-out;
+	-webkit-transition-delay:  999999999s;
+	-webkit-transition: color  999999999s ease-out, background-color  999999999s ease-out;
+	-webkit-text-fill-color: #fff;
+}
+.ant-input:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px #ffffff inset !important;   //改成你想要的背景色
+  -webkit-text-fill-color:#000000 !important;
+}

@@ -151,6 +151,79 @@ export default defineConfig({
 ```bash
 $ npm install antd
 ```
+2. 定制主题`ConfigProvider`
+3. 获取主题变量
+```js
+import { App } from 'antd'
+import type { MessageInstance } from 'antd/es/message/interface'
+import type { ModalStaticFunctions } from 'antd/es/modal/confirm'
+import type { NotificationInstance } from 'antd/es/notification/interface'
+let newMessage: MessageInstance
+let notification: NotificationInstance
+let modal: Omit<ModalStaticFunctions, 'warn'>
+const msgKey = ['info', 'success', 'error', 'warning','loading']
+const message : { [key: string]: any } = {}
+declare global {
+	interface Window {
+		$message: typeof message;
+		$modal: typeof modal;
+		$notification: typeof notification;
+	}
+}
+export default function AdtdGlobal(){
+	const staticFunction = App.useApp()
+	newMessage = staticFunction.message
+	modal = staticFunction.modal
+	notification = staticFunction.notification
+	msgKey.forEach(key => {
+		message[key] = (content:any,duration?:number,onClose?:()=>void)=>{
+			newMessage.destroy()
+			newMessage[key as keyof typeof newMessage](content as any,duration,onClose)
+		}
+	})
+	window.$message = message
+	window.$modal = modal
+	window.$notification = notification
+	return null
+}
+```
+
+2. 在`App.tsx`中引入
+```tsx
+import { BrowserRouter } from 'react-router-dom'
+import { App as AntdApp, ConfigProvider,theme } from 'antd'
+import Router from './router'
+import AdtdGlobal from '@/utils/global'
+// API+组件化创建的路由
+function App() {
+	return (
+		<ConfigProvider
+			theme={{
+				token: {
+					colorPrimary: "#ed7c0b",
+					borderRadius: 4,
+				},
+				algorithm: theme.defaultAlgorithm,
+			}}
+		>
+			<AntdApp>
+				<AdtdGlobal />
+				<BrowserRouter>
+					<Router />
+				</BrowserRouter>
+			</AntdApp>
+		</ConfigProvider>
+		
+	)
+}
+export default App
+```
+3. 使用全局message
+```js
+window.$message.success('登录成功')
+```
+
+
 ## vite项目安装Tailwind CSS 
 1. 下载依赖
 ```bash
@@ -163,11 +236,67 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
 })
 ```
-3. 导入 Tailwind CSS
+3. 在src目录下创建`styles/index.css`文件，并写入以下内容
 ```css
 @import "tailwindcss";
 ```
 
+## 项目配置scss
+1. 安装依赖
+```bash
+$ npm install sass -D
+```
+2. 在`vite.config.ts`中配置scss
+```js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+export default defineConfig({
+  plugins: [react()],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "@/styles/index.scss";`, // 全局引入样式文件
+      },
+    },
+  },
+})
+```
+3. 在`src/styles/index.scss`中写入全局样式
+```scss
+// 浏览器填充文本框背景色修改
+.ant-input:-webkit-autofill,
+.ant-input:-webkit-autofill:hover,
+.ant-input:-webkit-autofill:focus,
+.ant-input:-webkit-autofill:active {
+	transition-delay: 999999999s;
+	transition: color  999999999s ease-out, background-color  999999999s ease-out;
+	-webkit-transition-delay:  999999999s;
+	-webkit-transition: color  999999999s ease-out, background-color  999999999s ease-out;
+	-webkit-text-fill-color: #fff;
+}
+.ant-input:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px #ffffff inset !important;   //改成你想要的背景色
+  -webkit-text-fill-color:#000000 !important;
+}
+```
+4. css module 引入scss文件
+```js
+// 创建'./index.module.scss'
+// 修改第三方组件样式:global
+:global(.globalStyle) {
+    color: blue;
+}
+```
+
+## 项目样式初始化`Normalize.css`
+ 1. 安装依赖
+```bash
+$ npm install normalize.css
+```
+2. 在`src/styles/index.css`中引入样式文件
+```js
+import 'normalize.css'
+```
 
 ## 路由配置
 
@@ -277,40 +406,11 @@ export default defineConfig({
   },
 })
 ```
-## 项目配置scss
-1. 安装依赖
-```bash
-$ npm install sass -D
-```
-2. 在`vite.config.ts`中配置scss
-```js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-export default defineConfig({
-  plugins: [react()],
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `@import "@/styles/index.scss";`, // 全局引入样式文件
-      },
-    },
-  },
-})
-```
-## 项目样式初始化`Normalize.css`
- 1. 安装依赖
-```bash
-$ npm install normalize.css
-```
-2. 在`src/styles/index.scss`中引入样式文件
-```js
-import 'normalize.css'
-```
 
 ## 全局loading组件封装
 1. 在`utils`目录下创建`loading/index.js`
-
 2. 封装loading组件的展示和隐藏
+
 ```tsx
 import ReactDOM from 'react-dom/client'
 import Loading from './loading'
@@ -406,6 +506,7 @@ export function clearCache() {
 	sessionStorage.removeItem(BASE_KEY)
 }
 ```
+
 ## 编译时环境配置
 1. vite 将环境变量暴漏在`import.meta.env`上
 2. 在`.env`文件中配置开发环境变量
