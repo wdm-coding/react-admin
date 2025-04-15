@@ -668,3 +668,5 @@ export default config[env]
 2. 运行时环境配置：在项目运行阶段才能确定，比如`VITE_NODE_NEV`, `VITE_BASE_API`等
 3. 运行时环境配置更容易做动态切换，比如在开发阶段和测试阶段的接口地址不一样。
 :::
+
+## Layout布局
