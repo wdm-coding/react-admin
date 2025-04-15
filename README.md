@@ -144,6 +144,7 @@ export default defineConfig({
 7. utils: 存放工具函数
 8. types: 存放类型定义
 9. hooks: 存放自定义hooks
+10. styles: 存放全局样式
 10. views: 存放页面组件
 
 ## 安装Antd
@@ -153,76 +154,6 @@ $ npm install antd
 ```
 2. 定制主题`ConfigProvider`
 3. 获取主题变量
-```js
-import { App } from 'antd'
-import type { MessageInstance } from 'antd/es/message/interface'
-import type { ModalStaticFunctions } from 'antd/es/modal/confirm'
-import type { NotificationInstance } from 'antd/es/notification/interface'
-let newMessage: MessageInstance
-let notification: NotificationInstance
-let modal: Omit<ModalStaticFunctions, 'warn'>
-const msgKey = ['info', 'success', 'error', 'warning','loading']
-const message : { [key: string]: any } = {}
-declare global {
-	interface Window {
-		$message: typeof message;
-		$modal: typeof modal;
-		$notification: typeof notification;
-	}
-}
-export default function AdtdGlobal(){
-	const staticFunction = App.useApp()
-	newMessage = staticFunction.message
-	modal = staticFunction.modal
-	notification = staticFunction.notification
-	msgKey.forEach(key => {
-		message[key] = (content:any,duration?:number,onClose?:()=>void)=>{
-			newMessage.destroy()
-			newMessage[key as keyof typeof newMessage](content as any,duration,onClose)
-		}
-	})
-	window.$message = message
-	window.$modal = modal
-	window.$notification = notification
-	return null
-}
-```
-
-2. 在`App.tsx`中引入
-```tsx
-import { BrowserRouter } from 'react-router-dom'
-import { App as AntdApp, ConfigProvider,theme } from 'antd'
-import Router from './router'
-import AdtdGlobal from '@/utils/global'
-// API+组件化创建的路由
-function App() {
-	return (
-		<ConfigProvider
-			theme={{
-				token: {
-					colorPrimary: "#ed7c0b",
-					borderRadius: 4,
-				},
-				algorithm: theme.defaultAlgorithm,
-			}}
-		>
-			<AntdApp>
-				<AdtdGlobal />
-				<BrowserRouter>
-					<Router />
-				</BrowserRouter>
-			</AntdApp>
-		</ConfigProvider>
-		
-	)
-}
-export default App
-```
-3. 使用全局message
-```js
-window.$message.success('登录成功')
-```
-
 
 ## vite项目安装Tailwind CSS 
 1. 下载依赖
@@ -352,44 +283,152 @@ $ npm install axios
 ```
 ### 2. 项目根目录下创建`src/utils/request.ts`文件
 ### 3. 封装axios请求方法
-```js
+```ts
 import axios from 'axios'
+import {getItem,clearCache} from '@/utils/storage'
+import { showLoading, hideLoading } from '@/utils/loading/index'
+import { AxiosRequestConfig } from 'axios'// 扩展 AxiosRequestConfig 类型定义
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    hideLoading?: boolean | undefined
+  }
+}
 // 创建axios实例
-const request = axios.create({
-  baseURL: '/api', // API的base_url
-  timeout: 5000, // 请求超时时间
+const VITE_BASE_API = import.meta.env.VITE_BASE_API || '/'
+// 1.定义pendingRequests作为Map，存储请求的key和对应的cancel函数。
+const pendingRequests = new Map()
+// 2.生成唯一的key，用于取消重复请求。
+const generateRequestKey = (config:AxiosRequestConfig) => {
+	const { method, url, params, data } = config
+	return [method, url, JSON.stringify(params), JSON.stringify(data)].join('&')
+}
+// 3. 添加请求到pendingRequests的函数。
+const addPendingRequest = (config:AxiosRequestConfig) => {
+	const requestKey = generateRequestKey(config)
+	config.cancelToken = config.cancelToken || new axios.CancelToken(cancel => {
+		if (!pendingRequests.has(requestKey)) {
+			pendingRequests.set(requestKey, cancel)
+		}
+	})
+}
+// 4. 移除等待中的请求
+const removePendingRequest = (config:AxiosRequestConfig) => {
+	const requestKey = generateRequestKey(config)
+	if (pendingRequests.has(requestKey)) {
+		const cancelRequest = pendingRequests.get(requestKey)
+		cancelRequest && cancelRequest(requestKey)
+		pendingRequests.delete(requestKey)
+	}
+}
+// 5.创建axios实例，配置baseURL、超时等。
+const service = axios.create({
+	baseURL: VITE_BASE_API,
+	headers: {
+		'Content-Type': 'application/json;charset=UTF-8'
+	},
+	timeout: 50000
 })
-// 请求拦截器
-request.interceptors.request.use(
-  (config) => {
-    return config
-  },
-  (error) => {
-    Promise.reject(error)
-  }
+// 6. request拦截器
+service.interceptors.request.use(
+	config => {
+		// 7.请求开始时开启全局loading
+		!config.hideLoading && showLoading()
+		// 8.处理重复请求（取消之前的）
+		removePendingRequest(config)
+		addPendingRequest(config)
+		// 9.添加认证头(Token)等信息。
+		const token = getItem('token') || ''
+		if (token) {
+			config.headers.Authorization = 'Bearer ' + token
+		}
+		return config 
+	},
+	// 10.请求失败处理逻辑
+	error => {
+		return Promise.reject(error)
+	}
 )
-// 响应拦截器
-request.interceptors.response.use(
-  (response) => {
-    if (response.status === 200) {
-      return response.data
-    } else {
-      console.log('error')
-    }
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
+// 11. respone拦截器
+service.interceptors.response.use(
+	// 12. 响应成功处理逻辑
+	response => {
+		// 13. 请求成功时关闭全局loading
+		hideLoading()
+		// 14. 移除等待中的请求
+		removePendingRequest(response.config)
+		// 15. 如果是blob类型，直接返回response对象
+		if (response.config.responseType === 'blob') {
+			return response.data
+		}  else {
+			const res = response.data
+			if (res.code === 0) {
+				return res
+			} else if (res.code === -1) {
+				window.$message.error(res.msg || 'Error')
+				return res
+			} else if (res.code === -2) {
+				window.$message.error('登录超时，请重新登录', 3,() => { clearCache() })
+				return res
+			} else {
+				window.$message.error(res.msg || 'Error')
+				return Promise.reject()
+			}
+		}
+	},
+	// 16. 响应失败处理逻辑
+	error => {
+		// 17. 请求失败时关闭全局loading
+		hideLoading()
+		// 18. 移除等待中的请求
+		error.config && removePendingRequest(error.config)
+		// 19. 处理取消请求的错误
+		if (axios.isCancel(error)) {
+			return Promise.reject({ message: '请求被取消' })
+		} else {
+			const { status } = error.response
+			if (status) {
+				switch (status) {
+					case 401:
+						window.$message.error('登录超时，请重新登录', 3,() => { clearCache() })
+						break
+					case 404:
+						window.$message.error('路径未找到',3)
+						break
+					case 403:
+						window.$message.error('权限不足',3)
+						break
+					case 400:
+						window.$message.error('错误的请求',3)
+						break
+					case 500:
+						window.$message.error('服务器异常',3)
+						break
+					default:
+						window.$message.error('请求错误，请稍后再试……',3)
+						break
+				}
+			} else {
+				window.$message.error('网络错误，请稍后再试……',3)
+			}
+		}
+		return Promise.reject(error)
+	}
 )
-export default request
+
+export default service
 ```
+
 ### 4. 使用`request`请求数据
-```js
-import request from '@/utils/request'
-export function getUserInfo() {
-  return request.get('/user')
+```ts
+import request from '@/utils/request.ts'
+export function userLogin() {
+	return request({
+		url: '/user/test',
+		method: 'get'
+	})
 }
 ```
+
 ### 5. 配置开发环境代理
 在`vite.config.ts`中配置代理
 ```js
@@ -505,6 +544,79 @@ export function removeItem(key: string) {
 export function clearCache() {
 	sessionStorage.removeItem(BASE_KEY)
 }
+```
+
+## 全局`message`定义
+1. 在`utils/global/index.tsx`中定义全局message、modal、notification
+```tsx
+import { App } from 'antd'
+import type { MessageInstance } from 'antd/es/message/interface'
+import type { ModalStaticFunctions } from 'antd/es/modal/confirm'
+import type { NotificationInstance } from 'antd/es/notification/interface'
+let newMessage: MessageInstance
+let notification: NotificationInstance
+let modal: Omit<ModalStaticFunctions, 'warn'>
+const msgKey = ['info', 'success', 'error', 'warning','loading']
+const message : { [key: string]: any } = {}
+declare global {
+	interface Window {
+		$message: typeof message;
+		$modal: typeof modal;
+		$notification: typeof notification;
+	}
+}
+export default function AdtdGlobal(){
+	const staticFunction = App.useApp()
+	newMessage = staticFunction.message
+	modal = staticFunction.modal
+	notification = staticFunction.notification
+	msgKey.forEach(key => {
+		message[key] = (content:any,duration?:number,onClose?:()=>void)=>{
+			newMessage.destroy()
+			newMessage[key as keyof typeof newMessage](content as any,duration,onClose)
+		}
+	})
+	window.$message = message
+	window.$modal = modal
+	window.$notification = notification
+	return null
+}
+```
+
+2. 在`App.tsx`中引入
+```tsx
+import { BrowserRouter } from 'react-router-dom'
+import { App as AntdApp, ConfigProvider,theme } from 'antd'
+import Router from './router'
+import AdtdGlobal from '@/utils/global'
+// API+组件化创建的路由
+function App() {
+	return (
+		<ConfigProvider
+			theme={{
+				token: {
+					colorPrimary: "#ed7c0b",
+					borderRadius: 4,
+				},
+				algorithm: theme.defaultAlgorithm,
+			}}
+		>
+			<AntdApp>
+				<AdtdGlobal />
+				<BrowserRouter>
+					<Router />
+				</BrowserRouter>
+			</AntdApp>
+		</ConfigProvider>
+		
+	)
+}
+export default App
+```
+
+3. 使用全局message
+```js
+window.$message.success('登录成功')
 ```
 
 ## 编译时环境配置
