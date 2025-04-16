@@ -2,20 +2,21 @@ import styles from './index.module.scss'
 import type { FormProps } from 'antd'
 import { Button, Form, Input } from 'antd'
 import { useState } from 'react'
+import {useDispatch} from 'react-redux'
+import {userLogin} from '@/store/modules/user'
+import { AppDispatch } from '@/store'
 type FieldType = {
   account?: string
   password?: string
 };
 function Login() {
+	const dispatch:AppDispatch = useDispatch<AppDispatch>()
 	const [loading, setLoading] = useState<boolean>(false)
 	const onFinish: FormProps<FieldType>['onFinish'] = values => {
-		console.log('Success:', values)
 		setLoading(true)
-		setTimeout(() => {
+		dispatch(userLogin(values)).then(()=>{
 			setLoading(false)
-			window.$message.success('登录成功')
-			window.$message.error('error',5,()=>{console.log('error')})
-		}, 2000)
+		})
 	}
 	return (
 		<div className={`${styles.login_wrap} w-screen h-screen text-white flex items-center justify-center`}>

@@ -4,17 +4,19 @@ import Login from '@/views/Login/index.tsx'
 import NotFound from '@/views/NotFound.tsx'
 import Home from '@/views/Home/index.tsx'
 import Layout from '@/layout/index.tsx'
+import AuthRoute from '@/components/AuthRoute'
+import LoginGuard from '@/components/LoginGuard'
 const Test = lazy(() => import('@/views/Test'))
 const router: RouteObject[] = [
 	{
 		path: '/',
-		element: <Layout />,
+		element: <AuthRoute><Layout /></AuthRoute>,
 		children: [
 			{ element: <Home />, index: true },
 			{ path: 'test', element: <Test /> }
 		]
 	},
-	{ path: '/login', element: <Login /> },
+	{ path: '/login', element: <LoginGuard><Login /></LoginGuard> },
 	{ path: '/404', element: <NotFound /> },
 	{ path: '*', element: <Navigate to="/404" /> }
 ]

@@ -4,12 +4,18 @@ import { Button, Layout as AppLayout, theme } from 'antd'
 import { useState } from 'react'
 import SiderMenu from './components/SiderMenu'
 import LogoTitle from './components/LogoTitle'
+import {Logout} from '@/store/modules/user'
+import {useDispatch} from 'react-redux'
 const { Header, Sider, Content } = AppLayout
 function Layout() {
+	const dispatch = useDispatch()
 	const [collapsed, setCollapsed] = useState(false)
 	const {
 		token: { colorBgContainer, borderRadiusLG },
 	} = theme.useToken()
+	const logoutClick = () => {
+		dispatch(Logout())
+	}
 	return (
 		<AppLayout className="w-full h-full">
 			<Sider
@@ -34,7 +40,7 @@ function Layout() {
 				</div>
 			</Sider>
 			<AppLayout>
-				<Header style={{ padding: 0, background: colorBgContainer }}>
+				<Header style={{ padding: '0 20px 0 0', background: colorBgContainer }} className="flex">
 					<Button
 						type="text"
 						icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -45,6 +51,19 @@ function Layout() {
 							height: 64,
 						}}
 					/>
+					<Button
+						type="text"
+						onClick={logoutClick}
+						style={{
+							fontSize: '16px',
+							width: 64,
+							height: 64,
+							color:'#ff0000',
+							marginLeft:'auto'
+						}}
+					>
+						退出登录
+					</Button>
 				</Header>
 				<Content
 					style={{

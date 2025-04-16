@@ -668,5 +668,15 @@ export default config[env]
 2. 运行时环境配置：在项目运行阶段才能确定，比如`VITE_NODE_NEV`, `VITE_BASE_API`等
 3. 运行时环境配置更容易做动态切换，比如在开发阶段和测试阶段的接口地址不一样。
 :::
-
+## Redux配置
+1. 安装依赖
+```bash
+	$ npm install react-redux @reduxjs/toolkit
+	$ npm install @types/redux --save-dev
+```
+2. 创建store文件夹，在store文件夹中创建modules文件
+3. 在modules文件中创建模块，比如`user.ts`
+4. 在store文件夹中创建index.ts文件，引入所有模块
+5. 在项目main.tsx中引入store，并使用Provider包裹App组件
+6. 使用useSelector和useDispatch钩子函数获取状态值和分发action对象
 ## Layout布局
