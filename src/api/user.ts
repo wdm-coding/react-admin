@@ -13,3 +13,17 @@ export function getUserInfo(id:number | string) {
 		method: 'get'
 	})
 }
+// 查询用户日志
+export function getUserLog(id:number | string) {
+	return request({
+		url: `/user/logs/${id}`,
+		method: 'get'
+	})
+}
+// 查询日志分组
+export function getLogsGroup(id:number | string) {
+	return request({
+		url: `/user/logsByGroup/${id}`,
+		method: 'get'
+	})
+}
