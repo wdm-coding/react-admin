@@ -1,14 +1,22 @@
+import { getItem, setItem } from '@/utils/storage'
 import {createSlice} from '@reduxjs/toolkit'
 interface RouteState{
-	lasterRouter:object | null
+	lasterRouter:{
+		hash: string
+		key: string
+		pathname: string
+		search: string
+		state: any
+	} | null
 }
 const routeStore = createSlice({
 	name: 'route',
 	initialState: {
-		lasterRouter:null
+		lasterRouter:getItem('lasterRouter') || null,
 	},
 	reducers: {
 		SetLasterRoute(state, action) {
+			setItem('lasterRouter', action.payload)
 			state.lasterRouter = action.payload
 		}
 	}

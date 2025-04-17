@@ -13,7 +13,8 @@ const router: RouteObject[] = [
 		element: <AuthRoute><Layout /></AuthRoute>,
 		children: [
 			{ element: <Home />, index: true },
-			{ path: 'test', element: <Test /> }
+			{ path: 'test', element: <Test /> },
+			{ path: 'about', element: <div>关于我们</div> }
 		]
 	},
 	{ path: '/login', element: <LoginGuard><Login /></LoginGuard> },

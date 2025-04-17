@@ -9,11 +9,9 @@ const LoginGuard = ({ children }:{children:ReactNode}) => {
 	const navigate = useNavigate()
 	const { token } = useSelector<RootState,UserState>(state => state.user)
 	const {lasterRouter} = useSelector<RootState,RouteState>(state => state.route)
-	console.log(lasterRouter)
-	
 	useEffect(() => {
 		if (token) {
-			navigate('/', { replace: true })
+			navigate(lasterRouter?.pathname || '/', { replace: true })
 		}
 	}, [token, navigate])
 	return !token ? children : null
