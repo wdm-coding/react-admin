@@ -1,17 +1,14 @@
-import { useEffect } from 'react'
-// import { userLogin } from '@/api/user.ts'
-// import { setItem } from '@/utils/storage'
+import { getUserInfo } from '@/api/user.ts'
+import { Button } from 'antd'
 function Home() {
-	useEffect(() => {
-		// async function fetchData() {
-		// 	const res = await userLogin()
-		// 	setItem('next-js', res)
-		// 	setItem('token', res.data)
-		// 	console.log('userLogin', res)
-		// }
-		// fetchData()
-	}, [])
-	return <h1>Home</h1>
+	const getUserInfoHandler = async ()=>{
+		await getUserInfo(1)
+	}
+	return (
+		<div>
+			<Button onClick={getUserInfoHandler}>获取用户信息</Button>
+		</div>
+	)
 }
 
 export default Home
