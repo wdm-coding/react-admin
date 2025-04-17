@@ -679,4 +679,71 @@ export default config[env]
 4. 在store文件夹中创建index.ts文件，引入所有模块
 5. 在项目main.tsx中引入store，并使用Provider包裹App组件
 6. 使用useSelector和useDispatch钩子函数获取状态值和分发action对象
+
+## 登录鉴权+路由守卫
+1. AuthRoute组件封装路由守卫逻辑
+```tsx
+import {Navigate,useLocation} from 'react-router-dom'
+import {useSelector,useDispatch} from 'react-redux'
+import { ReactNode, useEffect } from 'react'
+import {RootState} from '@/store'
+import {UserState} from '@/store/modules/user'
+import {SetLasterRoute} from '@/store/modules/route'
+function AuthRoute ({children}:{children:ReactNode}){
+	const location = useLocation()
+	const dispatch = useDispatch()
+	// 记录最后一次访问的路由信息
+	useEffect(()=>{
+		dispatch(SetLasterRoute(location))
+	},[location])
+	// 获取用户登录状态信息
+	const user = useSelector<RootState,UserState>(state => state.user)
+	const {token} = user
+	if(token){
+		return <>{children}</>
+	}else{
+		return <Navigate to="/login" replace/>
+	}
+}
+
+export default AuthRoute
+```
+
+2. 在App.tsx中使用AuthRoute组件包裹需要鉴权的路由
+```js
+{
+	path: '/',
+	element: <AuthRoute><Layout /></AuthRoute>,
+	children: [
+		{ element: <Home />, index: true },
+		{ path: 'test', element: <Test /> },
+		{ path: 'about', element: <div>关于我们</div> }
+	]
+}
+```
+3. 封装login页面守卫逻辑
+```tsx
+// LoginGuard.tsx
+import { ReactNode, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { UserState } from '@/store/modules/user'
+import {RouteState} from '@/store/modules/route'
+import { RootState } from '@/store'
+const LoginGuard = ({ children }:{children:ReactNode}) => {
+	const navigate = useNavigate()
+	const { token } = useSelector<RootState,UserState>(state => state.user)
+	const {lasterRouter} = useSelector<RootState,RouteState>(state => state.route)
+	// 登录成功后跳转至最后一次访问的路由信息
+	useEffect(() => {
+		if (token) {
+			navigate(lasterRouter?.pathname || '/', { replace: true })
+		}
+	}, [token, navigate])
+	// 如果没有登录，则渲染login页面组件，否则不渲染
+	return !token ? children : null
+}
+
+export default LoginGuard
+```
 ## Layout布局
