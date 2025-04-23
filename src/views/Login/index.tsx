@@ -25,7 +25,7 @@ function Login() {
 				<Form
 					name="basic"
 					onFinish={onFinish}
-					size="large"
+					size="middle"
 				>
 					<Form.Item<FieldType>
 						label="账号"

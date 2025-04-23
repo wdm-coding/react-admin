@@ -1,13 +1,15 @@
 import { lazy } from 'react'
 import { useRoutes, RouteObject, Navigate } from 'react-router-dom'
-import Login from '@/views/Login/index.tsx'
+import Login from '@/views/Login'
 import NotFound from '@/views/NotFound.tsx'
-import Home from '@/views/Home/index.tsx'
-import Layout from '@/layout/index.tsx'
+import Home from '@/views/Home'
+import Layout from '@/layout'
 import AuthRoute from '@/components/AuthRoute'
 import LoginGuard from '@/components/LoginGuard'
 const Test = lazy(() => import('@/views/Test'))
 const Users = lazy(() => import('@/views/Users'))
+const Roles = lazy(() => import('@/views/Roles'))
+const Logs = lazy(() => import('@/views/Logs'))
 const router: RouteObject[] = [
 	{
 		path: '/',
@@ -15,6 +17,8 @@ const router: RouteObject[] = [
 		children: [
 			{ element: <Home />, index: true },
 			{ path: 'users', element: <Users /> },
+			{ path: 'roles', element: <Roles /> },
+			{ path: 'logs', element: <Logs /> },
 			{ path: 'test', element: <Test /> },
 			{ path: 'about', element: <div>关于我们</div> }
 		]

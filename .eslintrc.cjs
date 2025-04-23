@@ -24,7 +24,7 @@ module.exports = {
     "arrow-parens": ['error', 'as-needed'], // 如果只有一个参数不需要括号
     'max-len': [ // 一行最大长度为20
       'error',
-      {code: 120,tabWidth: 2}
+      {code: 140,tabWidth: 2}
     ], 
     "jsx-quotes":[2,"prefer-double"], // 强制在JSX属性中一致使用双引号
     "react/react-in-jsx-scope": 0,// 解决react/react-in-jsx-scope报错
