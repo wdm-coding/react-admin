@@ -7,12 +7,14 @@ import Layout from '@/layout/index.tsx'
 import AuthRoute from '@/components/AuthRoute'
 import LoginGuard from '@/components/LoginGuard'
 const Test = lazy(() => import('@/views/Test'))
+const Users = lazy(() => import('@/views/Users'))
 const router: RouteObject[] = [
 	{
 		path: '/',
 		element: <AuthRoute><Layout /></AuthRoute>,
 		children: [
 			{ element: <Home />, index: true },
+			{ path: 'users', element: <Users /> },
 			{ path: 'test', element: <Test /> },
 			{ path: 'about', element: <div>关于我们</div> }
 		]

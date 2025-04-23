@@ -1,5 +1,5 @@
 import { Menu } from 'antd'
-import {UserOutlined,VideoCameraOutlined} from '@ant-design/icons'
+import {HomeOutlined, UserOutlined,VideoCameraOutlined} from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import { useNavigate,useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
@@ -7,8 +7,13 @@ type MenuItem = Required<MenuProps>['items'][number];
 const items:MenuItem[] = [
 	{
 		key: '/',
-		icon: <UserOutlined />,
+		icon: <HomeOutlined />,
 		label: '首页',
+	},
+	{
+		key: '/users',
+		icon: <UserOutlined />,
+		label: '用户管理',
 	},
 	{
 		key: '/test',
