@@ -1,58 +1,87 @@
-import { Button, Drawer, Form, Input } from 'antd'
+import { Button, Drawer, Flex, Form, Input } from 'antd'
 import { forwardRef, useImperativeHandle, useState } from 'react'
 import type { FormProps } from 'antd'
 type FieldType = {
-	account: string,
+	username: string,
 	password: string,
 }
-interface UserModalRef {
-  show: () => void;
-	hide: () => void;
+export interface UserModalRef {
+  add: () => void
+	edit: (row:any) => void
+	hide: () => void
 }
 const UpdateUser = forwardRef<UserModalRef>((_props,ref) => {
+	const [formRef] = Form.useForm()
 	const [open, setOpen] = useState(false)
-	const show = () => {
+	const [title, setTitle] = useState('新增')
+	const add = () => {
+		setTitle('新增')
+		setOpen(true)
+	}
+	const edit = (row:any) =>{
+		setTitle('编辑')
+		formRef.setFieldsValue(row)
 		setOpen(true)
 	}
 	const hide = () => {
+		onReset()
 		setOpen(false)
 	}
 	const onFinish: FormProps<FieldType>['onFinish'] = values => {
 		console.log(values)
 	}
-	useImperativeHandle(ref, () => ({ show, hide }))
-	return (
-		<Drawer title="新增" onClose={hide} open={open}>
-			<Form
-				name="basic"
-				onFinish={onFinish}
+	const onSubmit = () => {
+		formRef.submit()
+	}
+	const onReset = () => {
+		formRef.resetFields()
+	}
+	const Footer = () => {
+		return <Flex vertical={false} justify="flex-end">
+			<Button
+				type="primary"
 				size="large"
+				style={{marginRight: 8}}
+				onClick={onSubmit}
 			>
-				<Form.Item<FieldType>
+			登录
+			</Button>
+			<Button
+				type="default"
+				htmlType="button"
+				size="large"
+				onClick={onReset}
+			>
+			重置
+			</Button>
+		</Flex>
+	}
+	useImperativeHandle(ref, () => ({ add, edit, hide }))
+	return (
+		<Drawer 
+			title={title}
+			onClose={hide}
+			open={open}
+			footer={Footer()}
+		>
+			<Form
+				form={formRef}
+				onFinish={onFinish}
+				style={{ maxWidth: 600 }}
+			>
+				<Form.Item
 					label="账号"
-					name="account"
+					name="username"
 					rules={[{ required: true, message: '请输入账号!' }]}
 				>
 					<Input autoComplete="off"/>
 				</Form.Item>
-				<Form.Item<FieldType>
+				<Form.Item
 					label="密码"
 					name="password"
 					rules={[{ required: true, message: '请输入密码!' }]}
 				>
 					<Input.Password autoComplete="new-password"/>
-				</Form.Item>
-				<Form.Item label={null}>
-					<div className="pt-[3vh] w-full flex items-center justify-center">
-						<Button
-							type="primary"
-							htmlType="submit"
-							className="w-[20vw] h-[40px]"
-							size="large"
-						>
-							登录
-						</Button>
-					</div>
 				</Form.Item>
 			</Form>
 		</Drawer>

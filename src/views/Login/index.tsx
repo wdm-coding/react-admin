@@ -20,8 +20,8 @@ function Login() {
 	}
 	return (
 		<div className={`${styles.login_wrap} w-screen h-screen text-white flex items-center justify-center`}>
-			<div className="w-[30vw] h-[42vh] bg-white pt-[2vh] pl-[1vw] pr-[1vw] rounded-lg">
-				<h1 className="text-black text-center pb-[3vh] font-semibold">欢迎登录</h1>
+			<div className="w-[400px] h-[300px] bg-white pt-[10px] pl-[10px] pr-[10px] rounded-lg">
+				<h1 className="text-black text-center pb-[10px] font-semibold">欢迎登录</h1>
 				<Form
 					name="basic"
 					onFinish={onFinish}
@@ -42,12 +42,12 @@ function Login() {
 						<Input.Password autoComplete="new-password"/>
 					</Form.Item>
 					<Form.Item label={null}>
-						<div className="pt-[3vh] w-full flex items-center justify-center">
+						<div className="pt-[10px] w-full flex items-center justify-center">
 							<Button
 								loading={loading}
 								type="primary"
 								htmlType="submit"
-								className="w-[20vw] h-[40px]"
+								className="w-[400px] h-[40px]"
 								size="large"
 							>
               登录
