@@ -1,7 +1,8 @@
 import { Space, Table, Button } from 'antd'
 import type { TableProps } from 'antd'
 import {PlusCircleOutlined} from '@ant-design/icons'
-
+import UpdateUser from './modules/UpdateUser'
+import { useRef } from 'react'
 interface DataType {
   id: string;
   username: string;
@@ -41,13 +42,22 @@ const data: DataType[] = [
 		username: 'Jim Green',
 	}
 ]
+interface UserModalRef {
+  show: () => void;
+	hide: () => void;
+}
 function Users(){
+	const updateUserRef = useRef<UserModalRef>(null)
+	const addHandler = () => {
+		updateUserRef.current?.show()
+	}
 	return (
 		<div>
 			<Button
 				type="primary" 
 				icon={<PlusCircleOutlined />}
 				style={{marginBottom:'10px'}}
+				onClick={addHandler}
 			>
 				新增
 			</Button>
@@ -58,6 +68,7 @@ function Users(){
 				dataSource={data}
 				rowKey="id"
 			/>
+			<UpdateUser ref={updateUserRef}/>
 		</div>
 		
 	)

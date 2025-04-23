@@ -33,6 +33,7 @@ module.exports = {
     "react/self-closing-comp":2, // 当标签没有子元素的时候，始终使用自闭合的标签
     "react/jsx-boolean-value":[2,"never"], // 在JSX中不允许使用布尔属性，例如<Foo disabled/> 应该写成 <Foo disabled={true} />
     "react-hooks/exhaustive-deps": 0, // 解决react-hooks/exhaustive-deps报错
+    "react/display-name": 0, // 解决react/display-name报错
     'react/jsx-closing-bracket-location': [ // 自闭合标签的结束括号位置，对齐开始标签的位置
       2, 
       {selfClosing: 'tag-aligned', nonEmpty: 'tag-aligned'}
