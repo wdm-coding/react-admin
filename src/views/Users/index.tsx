@@ -2,13 +2,15 @@ import { Space, Table, Button, Popconfirm } from 'antd'
 import type { TableProps } from 'antd'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import UpdateUser, {UserModalRef} from './modules/UpdateUser'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import {getUserList,deleteUser} from '@/api/user'
 interface DataType {
   id: string;
   username: string;
 	password: string;
 }
 function Users(){
+	const [data, setData] = useState<DataType[]>([])
 	const updateUserRef = useRef<UserModalRef>(null)
 	const columns: TableProps<DataType>['columns'] = [
 		{
@@ -27,8 +29,9 @@ function Users(){
 			align: 'center',
 		},
 		{
-			title: 'Action',
+			title: '操作',
 			key: 'action',
+			align: 'center',
 			width: 250,
 			render: (_,row) => (
 				<Space size="small" align="center"  style={{display:'flex',width:'100%',justifyContent:'center'}}>
@@ -60,27 +63,36 @@ function Users(){
 			),
 		},
 	]
-	const data: DataType[] = [
-		{
-			id: '1',
-			username: 'John Brown',
-			password: '123456',
-		},
-		{
-			id: '2',
-			username: 'Jim Green',
-			password: '123456',
-		}
-	]
 	const openAdd = () => {
 		updateUserRef.current?.add()
 	}
 	const openEdit = (row:DataType) => {
 		updateUserRef.current?.edit(row)
 	}
-	const deleteHandler = (row:DataType) => {
-		console.log('delete',row)
+	const deleteHandler = async (row:DataType) => {
+		const {code} = await deleteUser(row.id)
+		if(code === 0){
+			onReloadList()
+		}
 	}
+	const getUserListHandler = async (params = {}) => {
+		const baseParams = {
+			pageNum:1,
+			pageSize:10,
+			...params
+		}
+		const {code,data} = await getUserList(baseParams)
+		if(code === 0){
+			setData(data || [])
+		}
+	}
+	const  onReloadList = async () => {
+		await getUserListHandler()
+		window.$message.success('操作成功')
+	}
+	useEffect(()=>{
+		getUserListHandler()
+	},[])
 	return (
 		<div>
 			<Button
@@ -98,7 +110,7 @@ function Users(){
 				dataSource={data}
 				rowKey="id"
 			/>
-			<UpdateUser ref={updateUserRef}/>
+			<UpdateUser ref={updateUserRef} onReloadList={onReloadList}/>
 		</div>
 		
 	)

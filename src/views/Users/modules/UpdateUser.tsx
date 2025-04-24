@@ -1,6 +1,7 @@
 import { Button, Drawer, Flex, Form, Input } from 'antd'
 import { forwardRef, useImperativeHandle, useState } from 'react'
 import type { FormProps } from 'antd'
+import {addUser,editUser} from '@/api/user'
 type FieldType = {
 	username: string,
 	password: string,
@@ -10,16 +11,18 @@ export interface UserModalRef {
 	edit: (row:any) => void
 	hide: () => void
 }
-const UpdateUser = forwardRef<UserModalRef>((_props,ref) => {
+const UpdateUser = forwardRef<UserModalRef,any>(({onReloadList},ref) => {
 	const [formRef] = Form.useForm()
 	const [open, setOpen] = useState(false)
-	const [title, setTitle] = useState('新增')
+	const [updateType, setUpdateType] = useState('add')
+	const [rowId, setRowId] = useState<string | number>('')
 	const add = () => {
-		setTitle('新增')
+		setUpdateType('add')
 		setOpen(true)
 	}
 	const edit = (row:any) =>{
-		setTitle('编辑')
+		setRowId(row.id)
+		setUpdateType('edit')
 		formRef.setFieldsValue(row)
 		setOpen(true)
 	}
@@ -27,8 +30,12 @@ const UpdateUser = forwardRef<UserModalRef>((_props,ref) => {
 		onReset()
 		setOpen(false)
 	}
-	const onFinish: FormProps<FieldType>['onFinish'] = values => {
-		console.log(values)
+	const onFinish: FormProps<FieldType>['onFinish'] = async values => {
+		const {code} = updateType === 'add' ? await addUser(values) : await editUser(rowId,values)
+		if(code === 0){
+			hide()
+			onReloadList(updateType)
+		}
 	}
 	const onSubmit = () => {
 		formRef.submit()
@@ -44,7 +51,7 @@ const UpdateUser = forwardRef<UserModalRef>((_props,ref) => {
 				style={{marginRight: 8}}
 				onClick={onSubmit}
 			>
-			登录
+			提交
 			</Button>
 			<Button
 				type="default"
@@ -59,7 +66,7 @@ const UpdateUser = forwardRef<UserModalRef>((_props,ref) => {
 	useImperativeHandle(ref, () => ({ add, edit, hide }))
 	return (
 		<Drawer 
-			title={title}
+			title={updateType === 'add' ? '添加用户': '编辑用户'}
 			onClose={hide}
 			open={open}
 			footer={Footer()}

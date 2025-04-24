@@ -1,29 +1,49 @@
 import request from '@/utils/request.ts'
+// 定义后端响应数据的类型
+interface Response {
+  code: number;
+  data: any; 
+	msg: string;
+}
+interface User {
+  username: string;
+  password: string;
+}
 // 用户登录
-export function userLogin() {
+export function userLogin():Promise<Response> {
 	return request({
 		url: '/user/test',
 		method: 'get'
 	})
 }
-// 查询用户信息
-export function getUserInfo(id:number | string) {
+// 查询用户列表
+export function getUserList(params:any = {}):Promise<Response> {
 	return request({
-		url: `/user/profile/${id}`,
-		method: 'get'
+		url: '/user/list',
+		method: 'get',
+		params
 	})
 }
-// 查询用户日志
-export function getUserLog(id:number | string) {
+// 新增用户
+export function addUser(data:User):Promise<Response> {
 	return request({
-		url: `/user/logs/${id}`,
-		method: 'get'
+		url: '/user/add',
+		method: 'post',
+		data
 	})
 }
-// 查询日志分组
-export function getLogsGroup(id:number | string) {
+// 编辑用户
+export function editUser(id:string | number,data:User):Promise<Response> {
 	return request({
-		url: `/user/logsByGroup/${id}`,
-		method: 'get'
+		url: `/user/edit/${id}`,
+		method: 'PUT',
+		data
+	})
+}
+// 删除用户
+export function deleteUser(id:number | string):Promise<Response> {
+	return request({
+		url: `/user/delete/${id}`,
+		method: 'Delete'
 	})
 }
