@@ -9,7 +9,7 @@ import LoginGuard from '@/components/LoginGuard'
 const Test = lazy(() => import('@/views/Test'))
 const Users = lazy(() => import('@/views/Users'))
 const Roles = lazy(() => import('@/views/Roles'))
-const Logs = lazy(() => import('@/views/Logs'))
+const Loggers = lazy(() => import('@/views/Loggers'))
 const router: RouteObject[] = [
 	{
 		path: '/',
@@ -18,7 +18,7 @@ const router: RouteObject[] = [
 			{ element: <Home />, index: true },
 			{ path: 'users', element: <Users /> },
 			{ path: 'roles', element: <Roles /> },
-			{ path: 'logs', element: <Logs /> },
+			{ path: 'logs', element: <Loggers /> },
 			{ path: 'test', element: <Test /> },
 			{ path: 'about', element: <div>关于我们</div> }
 		]
