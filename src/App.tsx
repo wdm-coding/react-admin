@@ -8,7 +8,7 @@ function App() {
 		<ConfigProvider
 			theme={{
 				token: {
-					colorPrimary: '#ed7c0b',
+					colorPrimary: '#13C2C2',
 					borderRadius: 4,
 				},
 				algorithm: theme.defaultAlgorithm,

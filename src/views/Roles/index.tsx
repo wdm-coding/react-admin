@@ -22,7 +22,7 @@ const Roles = () => {
 			align: 'center',
 		},
 		{
-			title: 'Action',
+			title: '操作',
 			key: 'action',
 			width: 250,
 			render: (_,row) => (
