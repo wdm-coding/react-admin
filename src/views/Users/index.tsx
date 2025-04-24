@@ -1,4 +1,4 @@
-import { Space, Table, Button, Popconfirm } from 'antd'
+import { Space, Table, Button, Popconfirm, Form, Input, Row, Col, Select } from 'antd'
 import type { TableProps } from 'antd'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import UpdateUser, {UserModalRef} from './modules/UpdateUser'
@@ -10,6 +10,7 @@ interface DataType {
 	password: string;
 }
 function Users(){
+	const [formRef] = Form.useForm()
 	const [data, setData] = useState<DataType[]>([])
 	const updateUserRef = useRef<UserModalRef>(null)
 	const columns: TableProps<DataType>['columns'] = [
@@ -90,11 +91,52 @@ function Users(){
 		await getUserListHandler()
 		window.$message.success('操作成功')
 	}
+	const searchHandler = () => {
+		const query = formRef.getFieldsValue()
+		getUserListHandler(query)
+	}
+	const resetHandler = () => {
+		formRef.resetFields()
+		getUserListHandler({pageNum:1})
+	}
 	useEffect(()=>{
 		getUserListHandler()
 	},[])
 	return (
 		<div>
+			<Row style={{marginBottom:'10px'}}>
+				<Col span={18}>
+					<Form layout="inline" form={formRef}>
+						<Form.Item label="账号" name="username">
+							<Input placeholder="请输入账号" />
+						</Form.Item>
+						<Form.Item label="角色" name="roleId">
+							<Select
+								placeholder="请选择角色"
+								style={{ width: 220 }}
+								options={[
+									{ value: '1', label: '超级管理员' },
+									{ value: '2', label: '普通用户' }
+								]}
+							/>
+						</Form.Item>
+						<Form.Item label="性别" name="gender">
+							<Select
+								placeholder="请选择性别"
+								style={{ width: 220 }}
+								options={[
+									{ value: '1', label: '男' },
+									{ value: '2', label: '女' }
+								]}
+							/>
+						</Form.Item>
+					</Form>
+				</Col>
+				<Col span={6} style={{display:'flex'}} className="items-center justify-end">
+					<Button type="default" onClick={resetHandler}>重置</Button>
+					<Button type="primary" onClick={searchHandler} style={{marginLeft:'10px'}}>查询</Button>
+				</Col>
+			</Row>
 			<Button
 				type="primary" 
 				icon={<PlusCircleOutlined />}
