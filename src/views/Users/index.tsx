@@ -16,7 +16,7 @@ function Users(){
 	const columns: TableProps<DataType>['columns'] = [
 		{
 			title: 'ID',
-			dataIndex: 'id',
+			dataIndex: 'userId',
 			align: 'center',
 		},
 		{
@@ -25,8 +25,23 @@ function Users(){
 			align: 'center',
 		},
 		{
-			title: '密码',
-			dataIndex: 'password',
+			title: '所属角色',
+			dataIndex: 'roleName',
+			align: 'center',
+		},
+		{
+			title: '性别',
+			dataIndex: 'gender',
+			align: 'center',
+		},
+		{
+			title: '地址',
+			dataIndex: 'address',
+			align: 'center',
+		},
+		{
+			title: '手机号',
+			dataIndex: 'phone',
 			align: 'center',
 		},
 		{
@@ -84,7 +99,7 @@ function Users(){
 		}
 		const {code,data} = await getUserList(baseParams)
 		if(code === 0){
-			setData(data || [])
+			setData(data.list || [])
 		}
 	}
 	const  onReloadList = async () => {
@@ -150,7 +165,7 @@ function Users(){
 				bordered 
 				columns={columns} 
 				dataSource={data}
-				rowKey="id"
+				rowKey="userId"
 			/>
 			<UpdateUser ref={updateUserRef} onReloadList={onReloadList}/>
 		</div>
