@@ -21,7 +21,7 @@ const UpdateUser = forwardRef<UserModalRef,any>(({onReloadList},ref) => {
 		setOpen(true)
 	}
 	const edit = (row:any) =>{
-		setRowId(row.id)
+		setRowId(row.userId)
 		setUpdateType('edit')
 		formRef.setFieldsValue(row)
 		setOpen(true)

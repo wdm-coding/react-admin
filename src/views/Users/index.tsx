@@ -5,7 +5,7 @@ import UpdateUser, {UserModalRef} from './modules/UpdateUser'
 import { useEffect, useRef, useState } from 'react'
 import {getUserList,deleteUser} from '@/api/user'
 interface DataType {
-  id: string;
+  userId: string;
   username: string;
 	password: string;
 }
@@ -86,7 +86,7 @@ function Users(){
 		updateUserRef.current?.edit(row)
 	}
 	const deleteHandler = async (row:DataType) => {
-		const {code} = await deleteUser(row.id)
+		const {code} = await deleteUser(row.userId)
 		if(code === 0){
 			onReloadList()
 		}
