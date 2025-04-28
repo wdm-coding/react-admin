@@ -36,7 +36,7 @@ export function addUser(data:User):Promise<Response> {
 export function editUser(id:string | number,data:User):Promise<Response> {
 	return request({
 		url: `/user/edit/${id}`,
-		method: 'PUT',
+		method: 'Patch',
 		data
 	})
 }
