@@ -1,25 +1,28 @@
 import { Button, Drawer, Flex, Form, Input } from 'antd'
 import { forwardRef, useImperativeHandle, useState } from 'react'
 import type { FormProps } from 'antd'
+import {addRoles,editRoles} from '@/api/roles'
 type FieldType = {
-	roleName: string,
-	roleDesc: string,
+	name: string,
+	description: string,
 }
 export interface RoleModalRef {
   add: () => void
 	edit: (row:any) => void
 	hide: () => void
 }
-const UpdateUser = forwardRef<RoleModalRef>((_props,ref) => {
+const UpdateRole = forwardRef<RoleModalRef, any>(({onReloadList},ref) => {
 	const [formRef] = Form.useForm()
+	const [updateType, setUpdateType] = useState('add')
 	const [open, setOpen] = useState(false)
-	const [title, setTitle] = useState('新增')
+	const [rowId, setRowId] = useState<string | number>('')
 	const add = () => {
-		setTitle('新增')
+		setUpdateType('add')
 		setOpen(true)
 	}
 	const edit = (row:any) =>{
-		setTitle('编辑')
+		setRowId(row.id)
+		setUpdateType('edit')
 		formRef.setFieldsValue(row)
 		setOpen(true)
 	}
@@ -27,8 +30,12 @@ const UpdateUser = forwardRef<RoleModalRef>((_props,ref) => {
 		onReset()
 		setOpen(false)
 	}
-	const onFinish: FormProps<FieldType>['onFinish'] = values => {
-		console.log(values)
+	const onFinish: FormProps<FieldType>['onFinish'] = async values => {
+		const {code} = updateType === 'add' ? await addRoles(values) : await editRoles(rowId,values)
+		if(code === 0){
+			hide()
+			onReloadList()
+		}
 	}
 	const onSubmit = () => {
 		formRef.submit()
@@ -40,16 +47,16 @@ const UpdateUser = forwardRef<RoleModalRef>((_props,ref) => {
 		return <Flex vertical={false} justify="flex-end">
 			<Button
 				type="primary"
-				size="large"
+				size="middle"
 				style={{marginRight: 8}}
 				onClick={onSubmit}
 			>
-			登录
+				提交
 			</Button>
 			<Button
 				type="default"
 				htmlType="button"
-				size="large"
+				size="middle"
 				onClick={onReset}
 			>
 			重置
@@ -59,7 +66,7 @@ const UpdateUser = forwardRef<RoleModalRef>((_props,ref) => {
 	useImperativeHandle(ref, () => ({ add, edit, hide }))
 	return (
 		<Drawer 
-			title={title}
+			title={updateType === 'add' ? '添加角色': '编辑角色'}
 			onClose={hide}
 			open={open}
 			footer={Footer()}
@@ -71,21 +78,27 @@ const UpdateUser = forwardRef<RoleModalRef>((_props,ref) => {
 			>
 				<Form.Item
 					label="角色名称"
-					name="roleName"
+					name="name"
 					rules={[{ required: true, message: '请输入角色名称!' }]}
 				>
-					<Input/>
+					<Input placeholder="请输入角色名称"/>
+				</Form.Item>
+				<Form.Item
+					label="角色编码"
+					name="code"
+					rules={[{ required: true, message: '请输入角色编码!' }]}
+				>
+					<Input placeholder="请输入角色编码"/>
 				</Form.Item>
 				<Form.Item
 					label="角色描述"
-					name="roleDesc"
-					rules={[{ required: true, message: '请输入角色描述!' }]}
+					name="description"
 				>
-					<Input/>
+					<Input placeholder="请输入角色描述"/>
 				</Form.Item>
 			</Form>
 		</Drawer>
 	)
 })
 
-export default UpdateUser
+export default UpdateRole

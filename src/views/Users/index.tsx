@@ -1,9 +1,10 @@
 import { Space, Table, Button, Popconfirm, Form, Input, Row, Col, Select } from 'antd'
-import type { TableProps } from 'antd'
+import type { TablePaginationConfig, TableProps } from 'antd'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import UpdateUser, {UserModalRef} from './modules/UpdateUser'
 import { useEffect, useRef, useState } from 'react'
 import {getUserList,deleteUser} from '@/api/user'
+import {getRolesList} from '@/api/roles'
 interface DataType {
   userId: string;
   username: string;
@@ -12,6 +13,13 @@ interface DataType {
 function Users(){
 	const [formRef] = Form.useForm()
 	const [data, setData] = useState<DataType[]>([])
+	const [roleList, setRoleList] = useState<any[]>([])
+	const[query, setQuery] = useState<any>(null)
+	const [pagination, setPagination] = useState<any>({
+		current: 1,
+		pageSize: 10,
+		total: 0
+	})
 	const updateUserRef = useRef<UserModalRef>(null)
 	const columns: TableProps<DataType>['columns'] = [
 		{
@@ -33,6 +41,7 @@ function Users(){
 			title: '性别',
 			dataIndex: 'gender',
 			align: 'center',
+			render:gender=>gender === 1 ? '男':'女'
 		},
 		{
 			title: '地址',
@@ -91,14 +100,25 @@ function Users(){
 			onReloadList()
 		}
 	}
-	const getUserListHandler = async (params = {}) => {
+	const handleTableChange = (pagination:TablePaginationConfig) => {
+		setPagination({
+			...pagination,
+			current: pagination.current,
+			pageSize: pagination.pageSize
+		})
+	}
+	const getUserListHandler = async () => {
 		const baseParams = {
-			pageNum:1,
-			pageSize:10,
-			...params
+			pageNum:pagination.current,
+			pageSize:pagination.pageSize,
+			...query
 		}
 		const {code,data} = await getUserList(baseParams)
 		if(code === 0){
+			setPagination({
+				...pagination,
+				total: data.total || 0,
+			})
 			setData(data.list || [])
 		}
 	}
@@ -107,15 +127,32 @@ function Users(){
 		window.$message.success('操作成功')
 	}
 	const searchHandler = () => {
-		const query = formRef.getFieldsValue()
-		getUserListHandler(query)
+		setQuery(formRef.getFieldsValue())
+		setPagination({
+			...pagination,
+			current: 1
+		})
 	}
 	const resetHandler = () => {
 		formRef.resetFields()
-		getUserListHandler({pageNum:1})
+		setQuery(formRef.getFieldsValue())
+		setPagination({
+			...pagination,
+			current: 1
+		})
 	}
 	useEffect(()=>{
 		getUserListHandler()
+	},[pagination.current,pagination.pageSize,query])
+	useEffect(()=>{
+		async function getRoleListHandler() {
+			const {code,data} = await getRolesList()
+			if(code === 0){
+				const list = data.map((item:any) => ({value: item.id, label: item.name}))
+				setRoleList(list)
+			}
+		}
+		getRoleListHandler()
 	},[])
 	return (
 		<div>
@@ -129,10 +166,7 @@ function Users(){
 							<Select
 								placeholder="请选择角色"
 								style={{ width: 220 }}
-								options={[
-									{ value: '1', label: '超级管理员' },
-									{ value: '2', label: '普通用户' }
-								]}
+								options={roleList}
 							/>
 						</Form.Item>
 						<Form.Item label="性别" name="gender">
@@ -166,8 +200,17 @@ function Users(){
 				columns={columns} 
 				dataSource={data}
 				rowKey="userId"
+				pagination={{ 
+					...pagination,
+					position: ['bottomRight'],
+					showSizeChanger: true,
+					showQuickJumper: true,
+					pageSizeOptions: ['10', '20', '50', '100'],
+					showTotal: total => `共 ${total} 条`,
+				}}
+				onChange={handleTableChange}
 			/>
-			<UpdateUser ref={updateUserRef} onReloadList={onReloadList}/>
+			<UpdateUser ref={updateUserRef} onReloadList={onReloadList} roleList={roleList}/>
 		</div>
 		
 	)

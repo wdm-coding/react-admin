@@ -14,7 +14,7 @@ export interface UserModalRef {
 	edit: (row:any) => void
 	hide: () => void
 }
-const UpdateUser = forwardRef<UserModalRef,any>(({onReloadList},ref) => {
+const UpdateUser = forwardRef<UserModalRef,any>(({onReloadList,roleList},ref) => {
 	const [formRef] = Form.useForm()
 	const [open, setOpen] = useState(false)
 	const [updateType, setUpdateType] = useState('add')
@@ -54,7 +54,7 @@ const UpdateUser = forwardRef<UserModalRef,any>(({onReloadList},ref) => {
 		return <Flex vertical={false} justify="flex-end">
 			<Button
 				type="primary"
-				size="large"
+				size="middle"
 				style={{marginRight: 8}}
 				onClick={onSubmit}
 			>
@@ -63,7 +63,7 @@ const UpdateUser = forwardRef<UserModalRef,any>(({onReloadList},ref) => {
 			<Button
 				type="default"
 				htmlType="button"
-				size="large"
+				size="middle"
 				onClick={onReset}
 			>
 			重置
@@ -77,11 +77,13 @@ const UpdateUser = forwardRef<UserModalRef,any>(({onReloadList},ref) => {
 			onClose={hide}
 			open={open}
 			footer={Footer()}
+			destroyOnClose
 		>
 			<Form
 				form={formRef}
 				onFinish={onFinish}
 				style={{ maxWidth: 600 }}
+				name={updateType}
 			>
 				<Form.Item
 					label="账号"
@@ -109,10 +111,7 @@ const UpdateUser = forwardRef<UserModalRef,any>(({onReloadList},ref) => {
 					<Select
 						placeholder="请选择角色"
 						mode="multiple"
-						options={[
-							{ value: 1, label: '超级管理员' },
-							{ value: 2, label: '普通用户' }
-						]}
+						options={roleList}
 					/>
 				</Form.Item>
 				<Form.Item 
