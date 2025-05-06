@@ -16,6 +16,8 @@ function Login() {
 		setLoading(true)
 		dispatch(userLogin(values)).then(()=>{
 			setLoading(false)
+		}).catch(()=>{
+			setLoading(false)
 		})
 	}
 	return (

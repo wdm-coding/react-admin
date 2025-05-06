@@ -33,15 +33,16 @@ const userStore = createSlice({
 // 异步登录操作函数，获取token
 const userLogin = (params:any)=>{
 	return (dispatch:Dispatch)=>{
-		return new Promise<void>(resolve=>{
-			userSignin(params).then(res=>{
-				console.log(res)
+		return new Promise<void>((resolve,reject)=>{
+			userSignin({username:params.account,password:params.password}).then(res=>{
 				setTimeout(()=>{
 					window.$message.success('登录成功',2,()=>{
 						dispatch(SetToken(`Token-${params.account}`))
 						resolve(params)
 					})
 				},2000)
+			}).catch(()=>{
+				reject()
 			})
 		})
 	}
