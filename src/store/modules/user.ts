@@ -34,13 +34,13 @@ const userStore = createSlice({
 const userLogin = (params:any)=>{
 	return (dispatch:Dispatch)=>{
 		return new Promise<void>((resolve,reject)=>{
-			userSignin({username:params.account,password:params.password}).then(res=>{
-				setTimeout(()=>{
+			userSignin({username:params.account,password:params.password}).then(({code,data})=>{
+				if(code === 0 && data){
 					window.$message.success('登录成功',2,()=>{
-						dispatch(SetToken(`Token-${params.account}`))
-						resolve(params)
+						dispatch(SetToken(data))
+						resolve()
 					})
-				},2000)
+				}
 			}).catch(()=>{
 				reject()
 			})
