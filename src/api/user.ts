@@ -10,10 +10,11 @@ interface User {
   password: string;
 }
 // 用户登录
-export function userLogin():Promise<Response> {
+export function userSignin(data:any):Promise<Response> {
 	return request({
-		url: '/user/test',
-		method: 'get'
+		url: '/auth/signin',
+		method: 'POST',
+		data
 	})
 }
 // 查询用户列表

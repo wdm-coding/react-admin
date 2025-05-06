@@ -1,6 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit'
 import {setItem,getItem,clearCache} from '@/utils/storage'
 import { Dispatch } from 'redux'
+import {userSignin} from '@/api/user'
 interface UserState{
 	token:string | null,
 	userInfo:{name:string,phone:number,avator:string} | null
@@ -33,12 +34,15 @@ const userStore = createSlice({
 const userLogin = (params:any)=>{
 	return (dispatch:Dispatch)=>{
 		return new Promise<void>(resolve=>{
-			setTimeout(()=>{
-				window.$message.success('登录成功',2,()=>{
-					dispatch(SetToken(`Token-${params.account}`))
-					resolve(params)
-				})
-			},2000)
+			userSignin(params).then(res=>{
+				console.log(res)
+				setTimeout(()=>{
+					window.$message.success('登录成功',2,()=>{
+						dispatch(SetToken(`Token-${params.account}`))
+						resolve(params)
+					})
+				},2000)
+			})
 		})
 	}
 }
