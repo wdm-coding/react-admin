@@ -99,7 +99,7 @@ service.interceptors.response.use(
 		if (axios.isCancel(error)) {
 			return Promise.reject({ message: '请求被取消' })
 		} else {
-			const { status } = error.response
+			const { status,data } = error.response
 			if (status) {
 				switch (status) {
 					case 401:
@@ -112,7 +112,7 @@ service.interceptors.response.use(
 						window.$message.error('权限不足',3)
 						break
 					case 400:
-						window.$message.error('错误的请求',3)
+						window.$message.error(data.msg || '错误的请求',3)
 						break
 					case 500:
 						window.$message.error('服务器异常',3)
@@ -125,7 +125,8 @@ service.interceptors.response.use(
 				window.$message.error('网络错误，请稍后再试……',3)
 			}
 		}
-		return Promise.reject(error)
+		return error.response || Promise.reject(error)
+		
 	}
 )
 
