@@ -126,7 +126,6 @@ service.interceptors.response.use(
 			}
 		}
 		return error.response || Promise.reject(error)
-		
 	}
 )
 
