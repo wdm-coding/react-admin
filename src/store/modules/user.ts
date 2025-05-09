@@ -40,6 +40,8 @@ const userLogin = (params:any)=>{
 						dispatch(SetToken(data))
 						resolve()
 					})
+				}else{
+					reject()
 				}
 			}).catch(()=>{
 				reject()

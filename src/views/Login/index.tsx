@@ -30,7 +30,6 @@ function Login() {
 	const userRegister = async (value: FieldType)=>{
 		if(!value.account || !value.password) return 
 		const {code} = await userSignup({username:value.account,password:value.password})
-		console.log(code)
 		setLoading(false)
 		if(code === 0){
 			window.$message.success('注册成功，请登录',2,()=>{
@@ -60,14 +59,14 @@ function Login() {
 					<Form.Item<FieldType>
 						label="账号"
 						name="account"
-						rules={[{ required: false, message: '请输入账号!' }]}
+						rules={[{ required: true, message: '请输入账号!' }]}
 					>
 						<Input autoComplete="off"/>
 					</Form.Item>
 					<Form.Item<FieldType>
 						label="密码"
 						name="password"
-						rules={[{ required: false, message: '请输入密码!' }]}
+						rules={[{ required: true, message: '请输入密码!' }]}
 					>
 						<Input.Password autoComplete="new-password"/>
 					</Form.Item>
