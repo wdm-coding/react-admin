@@ -9,6 +9,14 @@ interface User {
   username: string;
   password: string;
 }
+// 用户注册
+export function userSignup(data:User):Promise<Response> {
+	return request({
+		url: '/auth/signup',
+		method: 'POST',
+		data
+	})
+}
 // 用户登录
 export function userSignin(data:any):Promise<Response> {
 	return request({
