@@ -27,20 +27,15 @@ const items: MenuItem[] = [
 		label: '角色管理',
 	},
 	{
+		key: '/menus',
+		icon: <VideoCameraOutlined />,
+		label: '菜单管理',
+	},
+	{
 		key: '/logs',
 		icon: <ConsoleSqlOutlined />,
 		label: '日志管理',
-	},
-	{
-		key: '/test',
-		icon: <VideoCameraOutlined />,
-		label: '测试页面',
-	},
-	{
-		key: '/about',
-		icon: <VideoCameraOutlined />,
-		label: '关于我们',
-	},
+	}
 ]
 function SiderMenu() {
 	const navigate = useNavigate()

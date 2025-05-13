@@ -6,7 +6,7 @@ import Home from '@/views/Home'
 import Layout from '@/layout'
 import AuthRoute from '@/components/AuthRoute'
 import LoginGuard from '@/components/LoginGuard'
-const Test = lazy(() => import('@/views/Test'))
+const Menus = lazy(() => import('@/views/Menus'))
 const Users = lazy(() => import('@/views/Users'))
 const Roles = lazy(() => import('@/views/Roles'))
 const Loggers = lazy(() => import('@/views/Loggers'))
@@ -19,8 +19,7 @@ const router: RouteObject[] = [
 			{ path: 'users', element: <Users /> },
 			{ path: 'roles', element: <Roles /> },
 			{ path: 'logs', element: <Loggers /> },
-			{ path: 'test', element: <Test /> },
-			{ path: 'about', element: <div>关于我们</div> }
+			{ path: 'menus', element: <Menus /> }
 		]
 	},
 	{ path: '/login', element: <LoginGuard><Login /></LoginGuard> },
